@@ -1,2 +1,20 @@
 # ml-project
-EnergySense AI is a specialized machine learning solution developed to predict and manage hotel energy demand with high precision. By leveraging the XGBoost algorithm, it analyzes key factors like room occupancy and weather patterns to provide real-time forecasting through an interactive Streamlit dashboard. 
+# EnergySense AI - Hotel Energy Demand Prediction
+
+## 🎯 Project Objective
+To build a data-driven predictive system that forecasts electrical energy consumption in hotels, helping management reduce peak-load costs and optimize resource allocation.
+
+## 🛠 Tools & Technologies
+- Language: Python 3.9+
+- Framework: Streamlit
+- Algorithms: XGBoost, Random Forest
+- Libraries: Pandas, NumPy, Scikit-learn, Plotly
+
+## ⚙️ Installation & Execution
+1. Clone the repository.
+2. Install dependencies: pip install -r requirements.txt
+3. Run the app: streamlit run app.py
+
+## 📊 Inputs & Outputs
+- Inputs: Outdoor Temperature, Occupancy Level, AC Usage Hours, etc.
+- Outputs: Predicted Energy Load (kW) and interactive Analytics Charts.

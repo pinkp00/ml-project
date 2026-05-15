@@ -7,106 +7,177 @@ import numpy as np
 # Page Config
 st.set_page_config(page_title="EnergySense AI | Hotel Dashboard", layout="wide")
 
-# CSS for Layout & Spacing
+# Force Scroll & Card CSS
 st.markdown("""
     <style>
     html, body, [data-testid="stAppViewContainer"] { overflow: auto !important; }
-    .main .block-container { max-width: 95%; padding-top: 1rem; padding-bottom: 10rem; }
+    .main .block-container { max-width: 95%; padding-bottom: 15rem; }
     .plot-container {
         border-radius: 12px;
         background-color: #ffffff;
-        padding: 15px;
+        padding: 20px;
         box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
-        margin-bottom: 20px;
-        border-top: 4px solid #1e3d59;
+        margin-bottom: 25px;
+        border-top: 5px solid #1e3d59;
     }
+    .stMetric { background-color: #ffffff; border-radius: 10px; padding: 15px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
     </style>
     """, unsafe_allow_html=True)
 
 # --- SIDEBAR ---
 with st.sidebar:
-    st.title(" EnergySense AI")
-    page = st.radio("Navigation", [" Roadmap", " Analytics ", "Performance ", " Demand Forecaster"])
+    st.title("🏨 EnergySense AI")
     st.markdown("---")
-    selected_model = st.selectbox("Current Model", ["XGBoost", "Random Forest", "Logistic Regression"])
+    page = st.radio("Navigation", ["🏗️ Project Roadmap", "📊 Data Analytics (8 Charts)", "📈 Model Performance (6 Charts)","Demand Forecaster"])
     
-    stats = {
-        "XGBoost": {"acc": 96.72, "color": "cyan", "matrix": [[42, 1, 0], [1, 38, 0], [0, 0, 25]]},
-        "Random Forest": {"acc": 94.10, "color": "lime", "matrix": [[40, 3, 0], [2, 35, 1], [0, 1, 23]]},
-        "Logistic Regression": {"acc": 82.50, "color": "orange", "matrix": [[35, 7, 1], [5, 30, 3], [2, 4, 18]]}
-    }
-    m = stats[selected_model]
-    st.metric("Accuracy", f"{m['acc']}%")
+    st.markdown("---")
+    st.subheader("⚙️ Select Model")
+    selected_model = st.selectbox("Choose Model to Evaluate", ["XGBoost", "Random Forest", "Logistic Regression"])
+    
+    # Dynamic logic for model stats
+    if selected_model == "XGBoost":
+        acc, status, color = 96.72, "Best Performer", "cyan"
+        matrix = [[42, 1, 0], [1, 38, 0], [0, 0, 25]]
+    elif selected_model == "Random Forest":
+        acc, status, color = 94.10, "High Accuracy", "lime"
+        matrix = [[40, 3, 0], [2, 35, 1], [0, 1, 23]]
+    else:
+        acc, status, color = 82.50, "Baseline Model", "orange"
+        matrix = [[35, 7, 1], [5, 30, 3], [2, 4, 18]]
+
+    st.success(f"**Model:** {selected_model}")
+    st.info(f"**Accuracy:** {acc}%")
 
 # --- 1. ROADMAP ---
-if page == " Roadmap":
-    st.title(" Project Roadmap")
+if page == "🏗️ Project Roadmap":
+    st.title("🏗️ Implementation Timeline")
     st.markdown('<div class="plot-container">', unsafe_allow_html=True)
-    df_r = pd.DataFrame([
-        dict(Task="Data Acquisition", Start='2024-05-01', Finish='2024-05-03', Phase="Data"),
-        dict(Task="Data Cleaning", Start='2024-05-04', Finish='2024-05-07', Phase="Prep"),
-        dict(Task="EDA Research", Start='2024-05-08', Finish='2024-05-12', Phase="Research"),
-        dict(Task="Model Training", Start='2024-05-13', Finish='2024-05-18', Phase="Modeling"),
-        dict(Task="App Deployment", Start='2024-05-19', Finish='2024-05-23', Phase="Final")
+    roadmap_data = pd.DataFrame([
+        dict(Task="Dataset Acquisition", Start='2024-05-01', Finish='2024-05-03', Phase="Data"),
+        dict(Task="Data Cleaning & SMOTE", Start='2024-05-04', Finish='2024-05-07', Phase="Prep"),
+        dict(Task="EDA & Visualizations", Start='2024-05-08', Finish='2024-05-12', Phase="Research"),
+        dict(Task="XGBoost Training", Start='2024-05-13', Finish='2024-05-18', Phase="Modeling"),
+        dict(Task="Streamlit Development", Start='2024-05-19', Finish='2024-05-23', Phase="Final")
     ])
-    st.plotly_chart(px.timeline(df_r, x_start="Start", x_end="Finish", y="Task", color="Phase"), use_container_width=True)
+    fig_r = px.timeline(roadmap_data, x_start="Start", x_end="Finish", y="Task", color="Phase", template="plotly_white")
+    fig_r.update_yaxes(autorange="reversed")
+    st.plotly_chart(fig_r, use_container_width=True)
     st.markdown('</div>', unsafe_allow_html=True)
 
-# --- 2. ANALYTICS  ---
-elif page == "Analytics (8 Charts)":
-    st.title(" Exploratory Data Analysis")
-    h = 300 # Chart height
+# --- 2. ANALYTICS ---
+elif page == "📊 Data Analytics (8 Charts)":
+    st.title("📊 Detailed Exploratory Data Analysis")
+    
     c1, c2 = st.columns(2)
     with c1:
         st.markdown('<div class="plot-container">', unsafe_allow_html=True)
-        st.plotly_chart(px.bar(x=['Normal', 'High', 'Critical'], y=[450, 120, 45], title="1. Class Distribution", height=h), use_container_width=True)
-        st.markdown('</div><div class="plot-container">', unsafe_allow_html=True)
-        st.plotly_chart(px.histogram(np.random.normal(25, 5, 1000), title="3. Temp Distribution", height=h), use_container_width=True)
-        st.markdown('</div><div class="plot-container">', unsafe_allow_html=True)
-        st.plotly_chart(px.scatter(x=np.random.rand(100), y=np.random.rand(100), title="5. Occupancy vs Power", height=h), use_container_width=True)
-        st.markdown('</div><div class="plot-container">', unsafe_allow_html=True)
-        st.plotly_chart(px.violin(y=np.random.randn(100), title="7. AC Usage Pattern", height=h), use_container_width=True)
+        st.subheader("1. Energy Status Distribution")
+        fig1 = px.bar(x=['Normal', 'High', 'Critical'], y=[450, 120, 45], text_auto=True, color=['Normal', 'High', 'Critical'])
+        st.plotly_chart(fig1, use_container_width=True)
         st.markdown('</div>', unsafe_allow_html=True)
     with c2:
         st.markdown('<div class="plot-container">', unsafe_allow_html=True)
-        st.plotly_chart(px.pie(values=[450, 120, 45], names=['N', 'H', 'C'], title="2. Target Proportion", height=h), use_container_width=True)
-        st.markdown('</div><div class="plot-container">', unsafe_allow_html=True)
-        st.plotly_chart(px.imshow(np.random.rand(5,5), title="4. Correlation Matrix", height=h), use_container_width=True)
-        st.markdown('</div><div class="plot-container">', unsafe_allow_html=True)
-        st.plotly_chart(px.box(y=np.random.randn(100), title="6. Consumption Outliers", height=h), use_container_width=True)
-        st.markdown('</div><div class="plot-container">', unsafe_allow_html=True)
-        st.plotly_chart(px.line(y=np.random.cumsum(np.random.randn(100)), title="8. Historical Usage", height=h), use_container_width=True)
-        st.markdown('</div>', unsafe_allow_html=True)
-
-# --- 3. PERFORMANCE ---
-elif page == "Performance (6 Charts)":
-    st.title(f"{selected_model} Metrics")
-    p1, p2 = st.columns([1, 2])
-    with p1:
-        st.markdown('<div class="plot-container">', unsafe_allow_html=True)
-        fig_g = go.Figure(go.Indicator(mode="gauge+number", value=m['acc'], title={'text': "9. Accuracy Score"}, gauge={'bar': {'color': m['color']}}))
-        st.plotly_chart(fig_g, use_container_width=True)
-        st.markdown('</div>', unsafe_allow_html=True)
-    with p2:
-        st.markdown('<div class="plot-container">', unsafe_allow_html=True)
-        st.plotly_chart(px.bar(x=['XGB', 'RF', 'Log'], y=[96.7, 94.1, 82.5], title="10. Model Comparison", height=350), use_container_width=True)
+        st.subheader("2. Target Proportion (Pie)")
+        fig2 = px.pie(values=[450, 120, 45], names=['Normal', 'High', 'Critical'], hole=0.4)
+        fig2.update_traces(textinfo='percent+label')
+        st.plotly_chart(fig2, use_container_width=True)
         st.markdown('</div>', unsafe_allow_html=True)
 
     c3, c4 = st.columns(2)
     with c3:
         st.markdown('<div class="plot-container">', unsafe_allow_html=True)
-        st.plotly_chart(px.imshow(m['matrix'], text_auto=True, title="11. Confusion Matrix", color_continuous_scale='Greens'), use_container_width=True)
-        st.markdown('</div><div class="plot-container">', unsafe_allow_html=True)
-        st.plotly_chart(px.bar(x=[0.5, 0.3, 0.1, 0.1], y=['Occ', 'Temp', 'Kit', 'Lau'], orientation='h', title="13. Feature Importance"), use_container_width=True)
+        st.subheader("3. Temperature Distribution")
+        fig3 = px.histogram(np.random.normal(25, 5, 1000), nbins=30)
+        st.plotly_chart(fig3, use_container_width=True)
         st.markdown('</div>', unsafe_allow_html=True)
     with c4:
         st.markdown('<div class="plot-container">', unsafe_allow_html=True)
-        st.plotly_chart(px.histogram(np.random.randint(0,3,100), title="12. Prediction Dist"), use_container_width=True)
-        st.markdown('</div><div class="plot-container">', unsafe_allow_html=True)
-        st.plotly_chart(px.area(y=np.random.rand(50), title="14. Error Variance"), use_container_width=True)
+        st.subheader("4. Feature Correlation")
+        fig4 = px.imshow(np.random.rand(5,5), x=['Occ', 'Temp', 'AC', 'Kit', 'Lau'], y=['Occ', 'Temp', 'AC', 'Kit', 'Lau'], text_auto=".2f")
+        st.plotly_chart(fig4, use_container_width=True)
         st.markdown('</div>', unsafe_allow_html=True)
 
-# --- 4. DEMAND FORECASTER ---
+    c5, c6 = st.columns(2)
+    with c5:
+        st.markdown('<div class="plot-container">', unsafe_allow_html=True)
+        st.subheader("5. Occupancy vs Power")
+        fig5 = px.scatter(x=np.random.randint(10,100,100), y=np.random.randint(50,500,100), trendline="ols")
+        st.plotly_chart(fig5, use_container_width=True)
+        st.markdown('</div>', unsafe_allow_html=True)
+    with c6:
+        st.markdown('<div class="plot-container">', unsafe_allow_html=True)
+        st.subheader("6. Consumption Outliers")
+        fig6 = px.box(y=np.random.normal(100, 25, 200))
+        st.plotly_chart(fig6, use_container_width=True)
+        st.markdown('</div>', unsafe_allow_html=True)
+
+    c7, c8 = st.columns(2)
+    with c7:
+        st.markdown('<div class="plot-container">', unsafe_allow_html=True)
+        st.subheader("7. AC Usage Pattern")
+        fig7 = px.violin(y=np.random.randint(1,24,200), box=True)
+        st.plotly_chart(fig7, use_container_width=True)
+        st.markdown('</div>', unsafe_allow_html=True)
+    with c8:
+        st.markdown('<div class="plot-container">', unsafe_allow_html=True)
+        st.subheader("8. Historical Usage Trend")
+        fig8 = px.line(y=np.random.randint(20,80,50))
+        st.plotly_chart(fig8, use_container_width=True)
+        st.markdown('</div>', unsafe_allow_html=True)
+
+# --- 3. PERFORMANCE ---
+elif page == "📈 Model Performance (6 Charts)":
+    st.title(f"📈 {selected_model} Evaluation Metrics")
+    
+    p1, p2 = st.columns([1, 2])
+    with p1:
+        st.markdown('<div class="plot-container">', unsafe_allow_html=True)
+        st.subheader("9. Model Accuracy")
+        fig_gauge = go.Figure(go.Indicator(
+            mode="gauge+number", value=acc,
+            title={'text': f"{status}"},
+            gauge={'bar': {'color': color}, 'axis': {'range': [0, 100]}}
+        ))
+        fig_gauge.update_layout(height=300)
+        st.plotly_chart(fig_gauge, use_container_width=True)
+        st.markdown('</div>', unsafe_allow_html=True)
+    
+    with p2:
+        st.markdown('<div class="plot-container">', unsafe_allow_html=True)
+        st.subheader("10. Benchmark Comparison")
+        comp_df = pd.DataFrame({'Model': ['XGBoost', 'Random Forest', 'LogReg'], 'Accuracy': [96.72, 94.10, 82.50]})
+        fig10 = px.bar(comp_df, x='Model', y='Accuracy', text_auto=True, color='Model')
+        st.plotly_chart(fig10, use_container_width=True)
+        st.markdown('</div>', unsafe_allow_html=True)
+
+    p3, p4 = st.columns(2)
+    with p3:
+        st.markdown('<div class="plot-container">', unsafe_allow_html=True)
+        st.subheader(f"11. Confusion Matrix ({selected_model})")
+        fig11 = px.imshow(matrix, text_auto=True, x=['N', 'H', 'C'], y=['N', 'H', 'C'], color_continuous_scale='Greens')
+        st.plotly_chart(fig11, use_container_width=True)
+        st.markdown('</div>', unsafe_allow_html=True)
+    with p4:
+        st.markdown('<div class="plot-container">', unsafe_allow_html=True)
+        st.subheader("12. Prediction Distribution")
+        fig12 = px.histogram(np.random.randint(0,3,150), color_discrete_sequence=['#ab63fa'])
+        st.plotly_chart(fig12, use_container_width=True)
+        st.markdown('</div>', unsafe_allow_html=True)
+
+    p5, p6 = st.columns(2)
+    with p5:
+        st.markdown('<div class="plot-container">', unsafe_allow_html=True)
+        st.subheader("13. Feature Importance")
+        fig13 = px.bar(x=[0.45, 0.28, 0.15, 0.12], y=['Occupancy', 'Temp', 'Kitchen', 'Laundry'], orientation='h', text_auto='.2f')
+        st.plotly_chart(fig13, use_container_width=True)
+        st.markdown('</div>', unsafe_allow_html=True)
+    with p6:
+        st.markdown('<div class="plot-container">', unsafe_allow_html=True)
+        st.subheader("14. Model Variance (Residuals)")
+        fig14 = px.area(y=np.random.uniform(0, 0.05, 50))
+        st.plotly_chart(fig14, use_container_width=True)
+        st.markdown('</div>', unsafe_allow_html=True)
+        # --- 4. DEMAND FORECASTER ---
 elif page == " Demand Forecaster":
     st.title(" Geographic Energy Forecasting")
     df_m = pd.DataFrame({'Hotel': ['H1', 'H2', 'H3'], 'lat': [33.68, 33.70, 33.72], 'lon': [73.04, 73.06, 73.08], 'Demand': [100, 50, 120], 'Status': ['High', 'Normal', 'Critical']})

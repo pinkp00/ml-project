@@ -2,105 +2,122 @@ import streamlit as st
 import pandas as pd
 import plotly.express as px
 import plotly.graph_objects as go
-import numpy as np
+from datetime import datetime
 
-# Page Config
-st.set_page_config(page_title="EnergySense AI | Hotel Dashboard", layout="wide")
+# Page Configuration
+st.set_page_config(page_title="EnergySense AI - Hotel Dashboard", layout="wide")
 
-# Custom CSS for a clean look
+# Custom CSS for UI
 st.markdown("""
-    <style>
-    .main { background-color: #f8f9fa; }
-    .stMetric { background-color: #ffffff; padding: 10px; border-radius: 10px; }
-    </style>
-    """, unsafe_allow_html=True)
+<style>
+    .main { background-color: #f0f2f6; }
+    [data-testid="stSidebar"] { background-color: #0e1117; color: white; }
+    .stMetric { background-color: white; padding: 15px; border-radius: 10px; box-shadow: 2px 2px 5px rgba(0,0,0,0.1); }
+</style>
+""", unsafe_allow_html=True)
 
-# --- SIDEBAR ---
+# --- SIDEBAR NAVIGATION ---
 with st.sidebar:
     st.title("🏨 EnergySense AI")
     st.markdown("---")
-    page = st.radio("Navigation", ["🏗️ Development Phase", "📊 Analytics", "⚡ Demand Forecaster", "📈 Performance Metrics"])
+    page = st.radio("Navigation", ["📊 Analytics", "⚡ Demand Forecaster", "🏗️ Development Phase", "📈 Model Performance"])
     
     st.markdown("---")
     st.subheader("⚙️ Settings")
-    active_model = st.selectbox("Active Model", ["XGBoost", "Random Forest", "Logistic Regression"])
-    st.success(f"Running: {active_model}")
+    active_model = st.selectbox("Active Model", ["XGBoost (Recommended)", "Random Forest", "Logistic Regression"])
+    st.info(f"Current Model: {active_model}")
 
-# --- 1. DEVELOPMENT PHASE ---
-if page == "🏗️ Development Phase":
-    st.title("🏗️ Project Roadmap & Development Phase")
-    st.info("Tracking progress from Data Collection to Deployment")
-
-    dev_data = [
-        dict(Task="Dataset Acquisition", Start='2024-05-01', Finish='2024-05-03', Phase="Data"),
-        dict(Task="Data Cleaning", Start='2024-05-04', Finish='2024-05-07', Phase="Preparation"),
-        dict(Task="EDA (14 Charts)", Start='2024-05-08', Finish='2024-05-12', Phase="Research"),
-        dict(Task="Model Training", Start='2024-05-13', Finish='2024-05-18', Phase="Modeling"),
-        dict(Task="Streamlit Development", Start='2024-05-19', Finish='2024-05-23', Phase="Deployment"),
-        dict(Task="Final Testing", Start='2024-05-24', Finish='2024-05-25', Phase="Final")
-    ]
-    df_gantt = pd.DataFrame(dev_data)
-    
-    fig_gantt = px.timeline(df_gantt, x_start="Start", x_end="Finish", y="Task", color="Phase",
-                           title="Project Progress Timeline",
-                           color_discrete_sequence=px.colors.qualitative.Vivid)
-    fig_gantt.update_yaxes(autorange="reversed")
-    st.plotly_chart(fig_gantt, use_container_width=True)
-
-# --- 2. ANALYTICS ---
-elif page == "📊 Analytics":
+# --- 1. ANALYTICS PAGE ---
+if page == "📊 Analytics":
     st.title("📊 Hotel Energy Analytics")
+    st.write("Exploratory Data Analysis (EDA) Insights")
     
     col1, col2 = st.columns(2)
     with col1:
-        corr_data = np.random.rand(5,5)
-        fig_heat = px.imshow(corr_data, 
-                             x=['Temp', 'Occupancy', 'AC', 'Kitchen', 'Laundry'],
-                             y=['Temp', 'Occupancy', 'AC', 'Kitchen', 'Laundry'],
-                             title="Feature Correlation Heatmap", color_continuous_scale='Viridis')
+        # Example Heatmap logic
+        df_corr = pd.DataFrame(pd.np.random.rand(5, 5), columns=['Temp', 'Occupancy', 'Humidity', 'AC_Load', 'Kitchen'])
+        fig_heat = px.imshow(df_corr, text_auto=True, title="Feature Correlation Heatmap")
         st.plotly_chart(fig_heat, use_container_width=True)
-        
+    
     with col2:
-        df_line = pd.DataFrame({'Hour': range(24), 'Consumption': np.random.randint(40, 100, 24)})
-        fig_line = px.area(df_line, x='Hour', y='Consumption', title="Hourly Energy Usage Trend")
-        st.plotly_chart(fig_line, use_container_width=True)
+        # Energy Trend
+        df_trend = pd.DataFrame({'Day': range(1, 31), 'Demand': pd.np.random.randint(50, 200, 30)})
+        fig_trend = px.line(df_trend, x='Day', y='Demand', title="Monthly Energy Demand Trend")
+        st.plotly_chart(fig_trend, use_container_width=True)
 
-# --- 3. DEMAND FORECASTER ---
+# --- 2. DEMAND FORECASTER PAGE ---
 elif page == "⚡ Demand Forecaster":
-    st.title("⚡ Hotel Demand Forecaster")
+    st.title("⚡ Market Demand Forecaster")
     
     col_a, col_b = st.columns([2, 1])
     with col_a:
-        zones = ['North Wing', 'South Wing', 'Restaurant', 'Gym', 'Lobby']
-        demand = [85, 92, 78, 65, 88]
-        fig_market = px.bar(x=zones, y=demand, color=zones, title="Demand by Hotel Zone")
-        st.plotly_chart(fig_market, use_container_width=True)
+        # Map or Distribution
+        st.subheader("Demand Market Map")
+        df_map = pd.DataFrame({'Location': ['North Wing', 'South Wing', 'Lobby', 'Kitchen', 'Pool'],
+                              'Usage': [450, 300, 150, 600, 200]})
+        fig_bar = px.bar(df_map, x='Location', y='Usage', color='Usage', title="Area-wise Energy Distribution")
+        st.plotly_chart(fig_bar, use_container_width=True)
         
     with col_b:
-        fig_pie = px.pie(values=[45, 25, 20, 10], names=['Cooling', 'Heating', 'Lighting', 'Appliances'], hole=0.5)
+        st.subheader("Demand Split")
+        fig_pie = px.pie(values=[40, 30, 20, 10], names=['AC', 'Lighting', 'Heating', 'Others'], hole=0.4)
         st.plotly_chart(fig_pie, use_container_width=True)
 
-# --- 4. PERFORMANCE METRICS ---
-elif page == "📈 Performance Metrics":
-    st.title("📈 Model Performance Analysis")
+# --- 3. DEVELOPMENT PHASE (Gantt Chart) ---
+elif page == "🏗️ Development Phase":
+    st.title("🏗️ Project Development Roadmap")
     
-    fig_doughnut = go.Figure(data=[go.Pie(labels=['Accuracy', 'Error Rate'], values=[96.72, 3.28], hole=.7)])
-    fig_doughnut.update_layout(annotations=[dict(text='96.72%', x=0.5, y=0.5, font_size=30, showarrow=False)])
+    # Development Data
+    tasks = [
+        dict(Task="Dataset Collection", Start='2024-05-01', Finish='2024-05-05', Resource="ChatGPT/Kaggle"),
+        dict(Task="Data Cleaning", Start='2024-05-06', Finish='2024-05-10', Resource="Python/Pandas"),
+        dict(Task="EDA & Visuals", Start='2024-05-11', Finish='2024-05-15', Resource="Plotly"),
+        dict(Task="Model Training", Start='2024-05-16', Finish='2024-05-20', Resource="XGBoost/RF"),
+        dict(Task="Deployment", Start='2024-05-21', Finish='2024-05-25', Resource="Streamlit")
+    ]
+    df_gantt = pd.DataFrame(tasks)
+    
+    fig_gantt = px.timeline(df_gantt, x_start="Start", x_end="Finish", y="Task", color="Resource", 
+                           title="Project Timeline (dd/mm/yyyy format)",
+                           hover_data={'Start':True, 'Finish':True})
+    fig_gantt.update_yaxes(autorange="reversed")
+    st.plotly_chart(fig_gantt, use_container_width=True)
+    
+    st.table(df_gantt) # Clear table for dates
+
+# --- 4. MODEL PERFORMANCE (Colourful Rings) ---
+elif page == "📈 Model Performance":
+    st.title("📈 Model Comparison & Accuracy")
+    
+    # Performance Doughnut
+    st.subheader("Overall Model Stability")
+    fig_doughnut = go.Figure(data=[go.Pie(labels=['Accuracy', 'Error', 'Uncertainty'], values=[96.72, 2.28, 1], hole=.6)])
+    fig_doughnut.update_layout(annotations=[dict(text='96.72%', x=0.5, y=0.5, font_size=20, showarrow=False)])
     st.plotly_chart(fig_doughnut)
 
     st.markdown("---")
-    ring_col1, ring_col2, ring_col3 = st.columns(3)
+    st.subheader("Model Accuracy Rings")
     
-    def create_ring(label, value, color):
-        return go.Figure(go.Indicator(
-            mode = "gauge+number", value = value,
+    # Colourful Rings for 3 models
+    c1, c2, c3 = st.columns(3)
+    
+    def draw_ring(label, value, color):
+        fig = go.Figure(go.Indicator(
+            mode = "gauge+number",
+            value = value,
             title = {'text': label},
-            gauge = {'axis': {'range': [0, 100]}, 'bar': {'color': color}}
-        )).update_layout(height=300)
+            gauge = {'axis': {'range': [0, 100]},
+                     'bar': {'color': color},
+                     'bgcolor': "white",
+                     'borderwidth': 2,
+                     'bordercolor': "gray"}
+        ))
+        fig.update_layout(height=250)
+        return fig
 
-    with ring_col1:
-        st.plotly_chart(create_ring("XGBoost", 96.7, "cyan"), use_container_width=True)
-    with ring_col2:
-        st.plotly_chart(create_ring("Random Forest", 94.1, "lime"), use_container_width=True)
-    with ring_col3:
-        st.plotly_chart(create_ring("Log. Regression", 82.5, "orange"), use_container_width=True)
+    with c1:
+        st.plotly_chart(draw_ring("XGBoost", 96.7, "cyan"), use_container_width=True)
+    with c2:
+        st.plotly_chart(draw_ring("Random Forest", 94.1, "lime"), use_container_width=True)
+    with c3:
+        st.plotly_chart(draw_ring("Logistic Regression", 82.5, "orange"), use_container_width=True)

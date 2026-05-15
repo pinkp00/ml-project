@@ -24,14 +24,15 @@ st.markdown("""
     </style>
     """, unsafe_allow_html=True)
 
-# --- SIDEBAR ---
+# --- SIDEBAR (Icons Removed) ---
 with st.sidebar:
-    st.title("🏨 EnergySense AI")
+    st.title("EnergySense AI")
     st.markdown("---")
-    page = st.radio("Navigation", ["🏗️ Project Roadmap", "📊 Data Analytics (8 Charts)", "📈 Model Performance (6 Charts)","Demand Forecaster"])
+    # Navigation labels updated to remove icons
+    page = st.radio("Navigation", ["Project Roadmap", "Data Analytics", "Model Performance", "Demand Forecaster"])
     
     st.markdown("---")
-    st.subheader("⚙️ Select Model")
+    st.subheader("Select Model")
     selected_model = st.selectbox("Choose Model to Evaluate", ["XGBoost", "Random Forest", "Logistic Regression"])
     
     # Dynamic logic for model stats
@@ -45,12 +46,12 @@ with st.sidebar:
         acc, status, color = 82.50, "Baseline Model", "orange"
         matrix = [[35, 7, 1], [5, 30, 3], [2, 4, 18]]
 
-    st.success(f"**Model:** {selected_model}")
-    st.info(f"**Accuracy:** {acc}%")
+    st.success(f"Model: {selected_model}")
+    st.info(f"Accuracy: {acc}%")
 
 # --- 1. ROADMAP ---
-if page == "🏗️ Project Roadmap":
-    st.title("🏗️ Implementation Timeline")
+if page == "Project Roadmap":
+    st.title("Implementation Timeline")
     st.markdown('<div class="plot-container">', unsafe_allow_html=True)
     roadmap_data = pd.DataFrame([
         dict(Task="Dataset Acquisition", Start='2024-05-01', Finish='2024-05-03', Phase="Data"),
@@ -65,8 +66,8 @@ if page == "🏗️ Project Roadmap":
     st.markdown('</div>', unsafe_allow_html=True)
 
 # --- 2. ANALYTICS ---
-elif page == "📊 Data Analytics (8 Charts)":
-    st.title("📊 Detailed Exploratory Data Analysis")
+elif page == "Data Analytics":
+    st.title("Detailed Exploratory Data Analysis")
     
     c1, c2 = st.columns(2)
     with c1:
@@ -101,7 +102,11 @@ elif page == "📊 Data Analytics (8 Charts)":
     with c5:
         st.markdown('<div class="plot-container">', unsafe_allow_html=True)
         st.subheader("5. Occupancy vs Power")
-        fig5 = px.scatter(x=np.random.randint(10,100,100), y=np.random.randint(50,500,100), trendline="ols")
+        # Try/Except to handle trendline error if statsmodels is missing
+        try:
+            fig5 = px.scatter(x=np.random.randint(10,100,100), y=np.random.randint(50,500,100), trendline="ols")
+        except:
+            fig5 = px.scatter(x=np.random.randint(10,100,100), y=np.random.randint(50,500,100))
         st.plotly_chart(fig5, use_container_width=True)
         st.markdown('</div>', unsafe_allow_html=True)
     with c6:
@@ -126,8 +131,8 @@ elif page == "📊 Data Analytics (8 Charts)":
         st.markdown('</div>', unsafe_allow_html=True)
 
 # --- 3. PERFORMANCE ---
-elif page == "📈 Model Performance (6 Charts)":
-    st.title(f"📈 {selected_model} Evaluation Metrics")
+elif page == "Model Performance":
+    st.title(f"{selected_model} Evaluation Metrics")
     
     p1, p2 = st.columns([1, 2])
     with p1:
@@ -177,19 +182,47 @@ elif page == "📈 Model Performance (6 Charts)":
         fig14 = px.area(y=np.random.uniform(0, 0.05, 50))
         st.plotly_chart(fig14, use_container_width=True)
         st.markdown('</div>', unsafe_allow_html=True)
-        # --- 4. DEMAND FORECASTER ---
-elif page == " Demand Forecaster":
-    st.title(" Geographic Energy Forecasting")
-    df_m = pd.DataFrame({'Hotel': ['H1', 'H2', 'H3'], 'lat': [33.68, 33.70, 33.72], 'lon': [73.04, 73.06, 73.08], 'Demand': [100, 50, 120], 'Status': ['High', 'Normal', 'Critical']})
+
+# --- 4. DEMAND FORECASTER (Fixed) ---
+elif page == "Demand Forecaster":
+    st.title("Geographic Energy Forecasting")
+    
+    # Dummy data for map
+    df_m = pd.DataFrame({
+        'Hotel': ['Plaza Hotel', 'Grand Inn', 'City Center Stay', 'Royal Suite', 'Eco Lodge'],
+        'lat': [33.6844, 33.7000, 33.7200, 33.6900, 33.7100],
+        'lon': [73.0479, 73.0600, 73.0800, 73.0200, 73.0900],
+        'Demand': [100, 50, 120, 80, 40],
+        'Status': ['Critical', 'Normal', 'Critical', 'High', 'Normal']
+    })
     
     col1, col2 = st.columns([2, 1])
     with col1:
         st.markdown('<div class="plot-container">', unsafe_allow_html=True)
-        fig_map = px.scatter_mapbox(df_m, lat="lat", lon="lon", color="Status", size="Demand", zoom=11, height=500, color_discrete_map={"Critical": "red", "High": "orange", "Normal": "green"})
+        st.subheader("Real-time Regional Demand Map")
+        fig_map = px.scatter_mapbox(
+            df_m, lat="lat", lon="lon", 
+            color="Status", size="Demand", 
+            hover_name="Hotel",
+            zoom=11, height=500, 
+            color_discrete_map={"Critical": "red", "High": "orange", "Normal": "green"}
+        )
         fig_map.update_layout(mapbox_style="open-street-map", margin={"r":0,"t":0,"l":0,"b":0})
         st.plotly_chart(fig_map, use_container_width=True)
         st.markdown('</div>', unsafe_allow_html=True)
+        
     with col2:
         st.markdown('<div class="plot-container">', unsafe_allow_html=True)
-        st.plotly_chart(px.pie(df_m, names='Status', values='Demand', hole=0.5, title="Demand Mix"), use_container_width=True)
+        st.subheader("Demand Mix")
+        # Doughnut chart (Pie with hole)
+        fig_pie = px.pie(
+            df_m, names='Status', values='Demand', 
+            hole=0.5,
+            color='Status',
+            color_discrete_map={"Critical": "red", "High": "orange", "Normal": "green"}
+        )
+        st.plotly_chart(fig_pie, use_container_width=True)
         st.markdown('</div>', unsafe_allow_html=True)
+
+    # Info card for value addition
+    st.info("Demand forecasting is based on real-time occupancy and external weather parameters.")

@@ -7,23 +7,34 @@ import numpy as np
 # Page Configuration
 st.set_page_config(page_title="EnergySense AI | Hotel Dashboard", layout="wide")
 
-# Custom CSS for Professional Card UI & Scrollability
+# --- FORCE SCROLL CSS ---
 st.markdown("""
     <style>
-    .main { background-color: #f0f2f6; }
+    /* 1. Force the main container to allow scrolling */
+    .main .block-container {
+        max-width: 95%;
+        padding-top: 2rem;
+        padding-bottom: 10rem; /* Extra space at bottom to ensure scroll */
+        height: auto !important;
+        overflow: visible !important;
+    }
+    
+    /* 2. Custom Card Design */
     .plot-container {
-        border-radius: 15px;
+        border-radius: 12px;
         background-color: #ffffff;
         padding: 20px;
-        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
         margin-bottom: 25px;
-        border-top: 5px solid #1e3d59;
+        border: 1px solid #e6e9ef;
     }
-    .stApp { overflow-y: auto; }
-    h1, h2, h3 { color: #1e3d59; font-weight: bold; }
+
+    /* 3. Make the app background light grey */
+    .stApp {
+        background-color: #f8f9fa;
+    }
     </style>
     """, unsafe_allow_html=True)
-
 # --- SIDEBAR ---
 with st.sidebar:
     st.title("🏨 EnergySense AI")

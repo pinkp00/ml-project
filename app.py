@@ -25,8 +25,8 @@ st.markdown("""
 
 # --- SIDEBAR ---
 with st.sidebar:
-    st.title("🏨 EnergySense AI")
-    page = st.radio("Navigation", ["🏗️ Roadmap", "📊 Analytics (8 Charts)", "📈 Performance (6 Charts)", "🔮 Demand Forecaster"])
+    st.title(" EnergySense AI")
+    page = st.radio("Navigation", [" Roadmap", " Analytics ", "Performance ", " Demand Forecaster"])
     st.markdown("---")
     selected_model = st.selectbox("Current Model", ["XGBoost", "Random Forest", "Logistic Regression"])
     
@@ -39,8 +39,8 @@ with st.sidebar:
     st.metric("Accuracy", f"{m['acc']}%")
 
 # --- 1. ROADMAP ---
-if page == "🏗️ Roadmap":
-    st.title("🏗️ Project Roadmap")
+if page == " Roadmap":
+    st.title(" Project Roadmap")
     st.markdown('<div class="plot-container">', unsafe_allow_html=True)
     df_r = pd.DataFrame([
         dict(Task="Data Acquisition", Start='2024-05-01', Finish='2024-05-03', Phase="Data"),
@@ -52,9 +52,9 @@ if page == "🏗️ Roadmap":
     st.plotly_chart(px.timeline(df_r, x_start="Start", x_end="Finish", y="Task", color="Phase"), use_container_width=True)
     st.markdown('</div>', unsafe_allow_html=True)
 
-# --- 2. ANALYTICS (8 CHARTS) ---
-elif page == "📊 Analytics (8 Charts)":
-    st.title("📊 Exploratory Data Analysis")
+# --- 2. ANALYTICS  ---
+elif page == "Analytics (8 Charts)":
+    st.title(" Exploratory Data Analysis")
     h = 300 # Chart height
     c1, c2 = st.columns(2)
     with c1:
@@ -78,9 +78,9 @@ elif page == "📊 Analytics (8 Charts)":
         st.plotly_chart(px.line(y=np.random.cumsum(np.random.randn(100)), title="8. Historical Usage", height=h), use_container_width=True)
         st.markdown('</div>', unsafe_allow_html=True)
 
-# --- 3. PERFORMANCE (6 CHARTS) ---
-elif page == "📈 Performance (6 Charts)":
-    st.title(f"📈 {selected_model} Metrics")
+# --- 3. PERFORMANCE ---
+elif page == "Performance (6 Charts)":
+    st.title(f"{selected_model} Metrics")
     p1, p2 = st.columns([1, 2])
     with p1:
         st.markdown('<div class="plot-container">', unsafe_allow_html=True)
@@ -107,8 +107,8 @@ elif page == "📈 Performance (6 Charts)":
         st.markdown('</div>', unsafe_allow_html=True)
 
 # --- 4. DEMAND FORECASTER ---
-elif page == "🔮 Demand Forecaster":
-    st.title("🔮 Geographic Energy Forecasting")
+elif page == " Demand Forecaster":
+    st.title(" Geographic Energy Forecasting")
     df_m = pd.DataFrame({'Hotel': ['H1', 'H2', 'H3'], 'lat': [33.68, 33.70, 33.72], 'lon': [73.04, 73.06, 73.08], 'Demand': [100, 50, 120], 'Status': ['High', 'Normal', 'Critical']})
     
     col1, col2 = st.columns([2, 1])

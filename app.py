@@ -107,7 +107,7 @@ with st.sidebar:
     st.success(f"Model: {selected_model}")
     st.info(f"Accuracy: {acc}%")
 # --- 1. ROADMAP ---
-elif page == "Project Roadmap":
+if page == "Project Roadmap":
     st.title("Implementation Timeline")
     st.markdown('<div class="plot-container">', unsafe_allow_html=True)
     

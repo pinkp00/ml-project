@@ -291,7 +291,7 @@ elif page == "Prediction (Step by Step)":
         </div>
         """, unsafe_allow_html=True)
     
-    # Initialize session state for click validation so the cards stay visible after interaction
+    # Initialize session state for click validation
     if 'prediction_triggered' not in st.session_state:
         st.session_state.prediction_triggered = False
 
@@ -300,7 +300,9 @@ elif page == "Prediction (Step by Step)":
     
     with left_col:
         st.markdown('<div class="custom-card">', unsafe_allow_html=True)
-        st.subheader('<h3><span class="circle-badge">1</span>Input Features</h3>')
+        
+        # FIXED: Card 1 Heading with custom pink circle badge matching theme color
+        st.markdown('<h3><span class="circle-badge" style="background-color: #e91e63;">1</span>Input Features</h3>', unsafe_allow_html=True)
         
         # Sliders
         inp_temp = st.slider("Temperature (°C)", min_value=10, max_value=50, value=38)
@@ -319,9 +321,7 @@ elif page == "Prediction (Step by Step)":
     with right_col:
         if st.session_state.prediction_triggered:
             # --- MODEL-SPECIFIC DIFFERENTIATION ENGINE ---
-            # Separate formulas, confidences, speeds, and names for each model option
             if selected_model == "XGBoost":
-                # XGBoost relies heavily on heat index spikes
                 math_base = (inp_temp * 0.48) + (inp_hum * 0.14) + (inp_solar * 0.05) + (inp_hour * 0.25)
                 if inp_day in ["Weekend", "Holiday"]: math_base += 6.5
                 predicted_mw = round(max(10.0, min(99.9, math_base)), 2)
@@ -331,7 +331,6 @@ elif page == "Prediction (Step by Step)":
                 pred_speed = "0.26 sec"
                 
             elif selected_model == "Random Forest":
-                # Random Forest balances standard deviation bounds 
                 math_base = (inp_temp * 0.42) + (inp_hum * 0.16) + (inp_solar * 0.04) + (inp_hour * 0.35)
                 if inp_day in ["Weekend", "Holiday"]: math_base += 8.2
                 predicted_mw = round(max(10.0, min(99.9, math_base)), 2)
@@ -341,7 +340,6 @@ elif page == "Prediction (Step by Step)":
                 pred_speed = "0.34 sec"
                 
             else: # Logistic Regression
-                # Baseline model uses flat linear weights yielding different variance boundaries
                 math_base = (inp_temp * 0.35) + (inp_hum * 0.20) + (inp_solar * 0.03) + (inp_hour * 0.40)
                 if inp_day in ["Weekend", "Holiday"]: math_base += 4.1
                 predicted_mw = round(max(10.0, min(99.9, math_base)), 2)
@@ -350,7 +348,6 @@ elif page == "Prediction (Step by Step)":
                 model_display_name = "Logistic Regression"
                 pred_speed = "0.12 sec"
 
-            # Classification category configurations
             if predicted_mw < 35.0:
                 status_tag = "Low Demand"
                 status_color = "#2ecc71"
@@ -361,10 +358,10 @@ elif page == "Prediction (Step by Step)":
                 status_tag = "Critical Demand Surge"
                 status_color = "#e91e63"
 
-         # --- TOP BOX: 2️⃣ Prediction Result ---
+            # --- TOP BOX: 2️⃣ Prediction Result ---
             st.markdown('<div class="custom-card">', unsafe_allow_html=True)
             
-            # FIXED: Using st.markdown with unsafe_allow_html for the custom circle badge
+            # FIXED: Card 2 Heading with custom purple circle badge
             st.markdown('<h3><span class="circle-badge">2</span>Prediction Result</h3>', unsafe_allow_html=True)
             
             st.markdown(f"""
@@ -377,7 +374,6 @@ elif page == "Prediction (Step by Step)":
                 </div>
                 """, unsafe_allow_html=True)
             
-            # Static horizontal row layout matching screen capture blocks inside Card 2
             st.markdown("<br>", unsafe_allow_html=True)
             m_col1, m_col2, m_col3 = st.columns(3)
             with m_col1:
@@ -390,7 +386,10 @@ elif page == "Prediction (Step by Step)":
             
             # --- BOTTOM BOX: 3️⃣ Additional Outputs ---
             st.markdown('<div class="custom-card">', unsafe_allow_html=True)
+            
+            # FIXED: Card 3 Heading with custom purple circle badge
             st.markdown('<h3><span class="circle-badge">3</span>Additional Outputs</h3>', unsafe_allow_html=True)
+            
             st.markdown(f"""
                 <div class="output-row">
                     <span class="output-label">Demand Category</span>
@@ -419,5 +418,4 @@ elif page == "Prediction (Step by Step)":
                 """, unsafe_allow_html=True)
             st.markdown('</div>', unsafe_allow_html=True)
         else:
-            # Welcome state placeholder before user clicks the action button
             st.info("💡 Please set the feature sliders and click on '⚡ Predict Demand' to generate the outputs.")

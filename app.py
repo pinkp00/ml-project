@@ -361,9 +361,12 @@ elif page == "Prediction (Step by Step)":
                 status_tag = "Critical Demand Surge"
                 status_color = "#e91e63"
 
-            # --- TOP BOX: 2️⃣ Prediction Result ---
+         # --- TOP BOX: 2️⃣ Prediction Result ---
             st.markdown('<div class="custom-card">', unsafe_allow_html=True)
-            st.subheader(<h3><span class="circle-badge">2</span>Prediction Result</h3>)
+            
+            # FIXED: Using st.markdown with unsafe_allow_html for the custom circle badge
+            st.markdown('<h3><span class="circle-badge">2</span>Prediction Result</h3>', unsafe_allow_html=True)
+            
             st.markdown(f"""
                 <div class="result-box">
                     <p style="color: #636e72; font-size: 15px; margin-bottom: 5px;">Predicted Demand (MW)</p>

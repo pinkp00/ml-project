@@ -300,7 +300,7 @@ elif page == "Prediction (Step by Step)":
     
     with left_col:
         st.markdown('<div class="custom-card">', unsafe_allow_html=True)
-        st.subheader('<h3><span class="circle-badge">1</span>Input Features</h3>', unsafe_allow_html=True)
+        st.subheader('<h3><span class="circle-badge">1</span>Input Features</h3>')
         
         # Sliders
         inp_temp = st.slider("Temperature (°C)", min_value=10, max_value=50, value=38)
@@ -363,7 +363,7 @@ elif page == "Prediction (Step by Step)":
 
             # --- TOP BOX: 2️⃣ Prediction Result ---
             st.markdown('<div class="custom-card">', unsafe_allow_html=True)
-            st.subheader('<h3><span class="circle-badge">2</span>Prediction Result</h3>', unsafe_allow_html=True)
+            st.subheader('<h3><span class="circle-badge">2</span>Prediction Result</h3>')
             st.markdown(f"""
                 <div class="result-box">
                     <p style="color: #636e72; font-size: 15px; margin-bottom: 5px;">Predicted Demand (MW)</p>

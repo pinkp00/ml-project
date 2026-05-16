@@ -363,7 +363,7 @@ elif page == "Prediction (Step by Step)":
 
             # --- TOP BOX: 2️⃣ Prediction Result ---
             st.markdown('<div class="custom-card">', unsafe_allow_html=True)
-            st.subheader('<h3><span class="circle-badge">2</span>Prediction Result</h3>')
+            st.subheader(<h3><span class="circle-badge">2</span>Prediction Result</h3>)
             st.markdown(f"""
                 <div class="result-box">
                     <p style="color: #636e72; font-size: 15px; margin-bottom: 5px;">Predicted Demand (MW)</p>

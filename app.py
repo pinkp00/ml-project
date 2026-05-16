@@ -106,18 +106,20 @@ with st.sidebar:
 
     st.success(f"Model: {selected_model}")
     st.info(f"Accuracy: {acc}%")
-
 # --- 1. ROADMAP ---
-if page == "Project Roadmap":
+elif page == "Project Roadmap":
     st.title("Implementation Timeline")
     st.markdown('<div class="plot-container">', unsafe_allow_html=True)
+    
+    # FIXED: Dates updated to 2026 and finalized before 10th May 2026
     roadmap_data = pd.DataFrame([
-        dict(Task="Dataset Acquisition", Start='2024-05-01', Finish='2024-05-03', Phase="Data"),
-        dict(Task="Data Cleaning & SMOTE", Start='2024-05-04', Finish='2024-05-07', Phase="Prep"),
-        dict(Task="EDA & Visualizations", Start='2024-05-08', Finish='2024-05-12', Phase="Research"),
-        dict(Task="XGBoost Training", Start='2024-05-13', Finish='2024-05-18', Phase="Modeling"),
-        dict(Task="Streamlit Development", Start='2024-05-19', Finish='2024-05-23', Phase="Final")
+        dict(Task="Dataset Acquisition", Start='2026-05-01', Finish='2026-05-02', Phase="Data"),
+        dict(Task="Data Cleaning & SMOTE", Start='2026-05-02', Finish='2026-05-04', Phase="Prep"),
+        dict(Task="EDA & Visualizations", Start='2026-05-04', Finish='2026-05-06', Phase="Research"),
+        dict(Task="XGBoost Training", Start='2026-05-06', Finish='2026-05-08', Phase="Modeling"),
+        dict(Task="Streamlit Development", Start='2026-05-08', Finish='2026-05-10', Phase="Final")
     ])
+    
     fig_r = px.timeline(roadmap_data, x_start="Start", x_end="Finish", y="Task", color="Phase", template="plotly_white")
     fig_r.update_yaxes(autorange="reversed")
     st.plotly_chart(fig_r, use_container_width=True)

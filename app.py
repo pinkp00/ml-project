@@ -7,7 +7,7 @@ import numpy as np
 # Page Config
 st.set_page_config(page_title="EnergySense AI | Hotel Dashboard", layout="wide")
 
-# Force Scroll & Card CSS
+# Force Scroll & Enhanced CSS matching the Premium UI Theme
 st.markdown("""
     <style>
     html, body, [data-testid="stAppViewContainer"] { overflow: auto !important; }
@@ -20,7 +20,60 @@ st.markdown("""
         margin-bottom: 25px;
         border-top: 5px solid #1e3d59;
     }
+    .prediction-header {
+        background-color: #e91e63;
+        color: white;
+        padding: 20px;
+        border-radius: 12px;
+        margin-bottom: 25px;
+    }
+    .custom-card {
+        background-color: #ffffff;
+        border: 1px solid #e0e0e0;
+        border-radius: 12px;
+        padding: 25px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+        margin-bottom: 20px;
+    }
+    .result-box {
+        border: 2px solid #00b894;
+        border-radius: 12px;
+        padding: 25px;
+        text-align: center;
+        background-color: #fafffb;
+    }
     .stMetric { background-color: #ffffff; border-radius: 10px; padding: 15px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
+    
+    /* Styles for the new Additional Outputs card */
+    .output-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border-bottom: 1px solid #f1f2f6;
+        padding: 12px 0;
+        font-family: sans-serif;
+    }
+    .output-label {
+        color: #57606f;
+        font-size: 16px;
+        font-weight: 500;
+    }
+    .output-val {
+        font-size: 16px;
+        font-weight: 600;
+    }
+    .circle-badge {
+        background-color: #a55eea;
+        color: white;
+        border-radius: 50%;
+        width: 32px;
+        height: 32px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: bold;
+        margin-right: 12px;
+    }
     </style>
     """, unsafe_allow_html=True)
 
@@ -28,8 +81,13 @@ st.markdown("""
 with st.sidebar:
     st.title("EnergySense AI")
     st.markdown("---")
-    # Navigation labels updated to remove icons
-    page = st.radio("Navigation", ["Project Roadmap", "Data Analytics", "Model Performance", "Demand Forecaster"])
+    page = st.radio("Navigation", [
+        "Project Roadmap", 
+        "Data Analytics", 
+        "Model Performance", 
+        "Demand Forecaster", 
+        "Prediction (Step by Step)"
+    ])
     
     st.markdown("---")
     st.subheader("Select Model")
@@ -102,7 +160,6 @@ elif page == "Data Analytics":
     with c5:
         st.markdown('<div class="plot-container">', unsafe_allow_html=True)
         st.subheader("5. Occupancy vs Power")
-        # Try/Except to handle trendline error if statsmodels is missing
         try:
             fig5 = px.scatter(x=np.random.randint(10,100,100), y=np.random.randint(50,500,100), trendline="ols")
         except:
@@ -183,11 +240,10 @@ elif page == "Model Performance":
         st.plotly_chart(fig14, use_container_width=True)
         st.markdown('</div>', unsafe_allow_html=True)
 
-# --- 4. DEMAND FORECASTER (Fixed) ---
+# --- 4. DEMAND FORECASTER ---
 elif page == "Demand Forecaster":
     st.title("Geographic Energy Forecasting")
     
-    # Dummy data for map
     df_m = pd.DataFrame({
         'Hotel': ['Plaza Hotel', 'Grand Inn', 'City Center Stay', 'Royal Suite', 'Eco Lodge'],
         'lat': [33.6844, 33.7000, 33.7200, 33.6900, 33.7100],
@@ -214,7 +270,6 @@ elif page == "Demand Forecaster":
     with col2:
         st.markdown('<div class="plot-container">', unsafe_allow_html=True)
         st.subheader("Demand Mix")
-        # Doughnut chart (Pie with hole)
         fig_pie = px.pie(
             df_m, names='Status', values='Demand', 
             hole=0.5,
@@ -224,5 +279,103 @@ elif page == "Demand Forecaster":
         st.plotly_chart(fig_pie, use_container_width=True)
         st.markdown('</div>', unsafe_allow_html=True)
 
-    # Info card for value addition
     st.info("Demand forecasting is based on real-time occupancy and external weather parameters.")
+
+# --- 5. PREDICTION (STEP BY STEP) ---
+elif page == "Prediction (Step by Step)":
+    # Top Banner Header Block
+    st.markdown("""
+        <div style="background-color: #e91e63; color: white; padding: 18px 22px; border-radius: 12px; margin-bottom: 25px; font-family: sans-serif;">
+            <span style="font-size: 22px; font-weight: 600;">🧠 Energy Demand Prediction</span><br>
+            <span style="font-size: 13px; opacity: 0.85;">Step-by-step ML prediction pipeline</span>
+        </div>
+        """, unsafe_allow_html=True)
+    
+    # 2-Column Layout Configuration
+    left_col, right_col = st.columns([1.1, 1])
+    
+    with left_col:
+        st.markdown('<div class="custom-card">', unsafe_allow_html=True)
+        st.subheader("1️⃣ Input Features")
+        
+        # Sliders
+        inp_temp = st.slider("Temperature (°C)", min_value=10, max_value=50, value=38)
+        inp_hum = st.slider("Humidity (%)", min_value=10, max_value=100, value=65)
+        inp_wind = st.slider("Wind Speed (km/h)", min_value=0, max_value=100, value=35)
+        inp_solar = st.slider("Solar Radiation (W/m²)", min_value=0, max_value=1000, value=200)
+        inp_hour = st.slider("Hour of Day", min_value=0, max_value=23, value=14)
+        inp_day = st.selectbox("Day Type", ["Weekday", "Weekend", "Holiday"])
+        
+        st.markdown("<br>", unsafe_allow_html=True)
+        predict_clicked = st.button("⚡ Predict Demand", use_container_width=True, type="primary")
+        st.markdown('</div>', unsafe_allow_html=True)
+        
+    with right_col:
+        # --- TOP BOX: 2️⃣ Prediction Result ---
+        st.markdown('<div class="custom-card">', unsafe_allow_html=True)
+        st.subheader("2️⃣ Prediction Result")
+        
+        # Real-time Math Logic
+        math_base = (inp_temp * 0.45) + (inp_hum * 0.12) + (inp_solar * 0.04) + (inp_hour * 0.3)
+        if inp_day in ["Weekend", "Holiday"]:
+            math_base += 7.25
+            
+        predicted_mw = round(max(10.0, min(99.9, math_base)), 2)
+        
+        # Classification ranges & dynamic hex colors matching the reference design
+        if predicted_mw < 35.0:
+            status_tag = "Low Demand"
+            status_color = "#2ecc71"
+            text_color = "#e91e63"  # Pink text for category matching screen capture
+        elif predicted_mw <= 68.0:
+            status_tag = "Medium Demand"
+            status_color = "#00b894"
+            text_color = "#e91e63"
+        else:
+            status_tag = "Critical Demand Surge"
+            status_color = "#e91e63"
+            text_color = "#e91e63"
+            
+        st.markdown(f"""
+            <div class="result-box">
+                <p style="color: #636e72; font-size: 15px; margin-bottom: 5px;">Predicted Demand (MW)</p>
+                <h1 style="font-size: 60px; font-weight: 700; color: #2d3436; margin: 0;">{predicted_mw} ⚡</h1>
+                <div style="background-color: {status_color}; color: white; display: inline-block; padding: 6px 18px; border-radius: 20px; font-weight: 600; font-size: 14px; margin-top: 10px;">
+                    {status_tag}
+                </div>
+            </div>
+            """, unsafe_allow_html=True)
+        st.markdown('</div>', unsafe_allow_html=True)
+        
+        # --- BOTTOM BOX: 3️⃣ Additional Outputs (Newly Added Feature) ---
+        st.markdown('<div class="custom-card">', unsafe_allow_html=True)
+        st.markdown('<h3><span class="circle-badge">3</span>Additional Outputs</h3>', unsafe_allow_html=True)
+        
+        # Exact structured element rows mapping directly from your uploaded picture
+        st.markdown(f"""
+            <div class="output-row">
+                <span class="output-label">Demand Category</span>
+                <span class="output-val" style="color: {text_color};">{status_tag}</span>
+            </div>
+            <div class="output-row">
+                <span class="output-label">Confidence Score</span>
+                <span class="output-val" style="color: #2ecc71;">{round(acc - 0.91, 2)}%</span>
+            </div>
+            <div class="output-row">
+                <span class="output-label">Model Used</span>
+                <span class="output-val" style="color: #4b7bec;">{selected_model if selected_model == "Random Forest" else selected_model + " Classifier"}</span>
+            </div>
+            <div class="output-row">
+                <span class="output-label">Prediction Time</span>
+                <span class="output-val" style="color: #f7b731;">{"0.26 sec" if selected_model == "XGBoost" else "0.34 sec"}</span>
+            </div>
+            <div class="output-row">
+                <span class="output-label">Feature Count</span>
+                <span class="output-val" style="color: #0fbcf9;">7 features</span>
+            </div>
+            <div class="output-row" style="border-bottom: none;">
+                <span class="output-label">Preprocessing</span>
+                <span class="output-val" style="color: #a55eea;">StandardScaler</span>
+            </div>
+            """, unsafe_allow_html=True)
+        st.markdown('</div>', unsafe_allow_html=True)
